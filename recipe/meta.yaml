@@ -1,6 +1,6 @@
 {% set name = "scikit-build" %}
-{% set version = "0.4.0" %}
-{% set sha256 = "88d4a5f8db51bf0031b7f8ed7db902678815a38706055e11e528707b32191df2" %}
+{% set version = "0.5.0" %}
+{% set sha256 = "d9a627058428189df544d5043c564435b74539ce8c631f2e2e919e54c7868953" %}
 
 package:
   name: {{ name|lower }}
@@ -10,8 +10,6 @@ source:
   fn: {{ name }}-{{ version }}.tar.gz
   url: https://github.com/scikit-build/scikit-build/archive/{{ version }}.tar.gz
   sha256: {{ sha256 }}
-  patches:
-    - python27-x64.patch  # [win and py27 and x86_64]
 
 build:
   number: 0
@@ -28,21 +26,23 @@ requirements:
     - setuptools
     - wheel
     - cmake
+    - ninja
 
 test:
   imports:
     - skbuild
   commands:
-    - cd ${SRC_DIR} && py.test -k "not (test_push_dir or test_fortran_compiler)"    # [unix]
-    - cd %SRC_DIR% && py.test -k "not (test_push_dir or test_fortran_compiler)"     # [win and not (py27 and x86_64)]
-    - cd %SRC_DIR% && py.test -k "not (test_push_dir or test_fortran_compiler or test_generator_selection or test_hello_builds_with_generator)"     # [win and py27 and x86_64]
+    - cd ${SRC_DIR} && py.test -k "not test_fortran_compiler"    # [unix]
+    - cd %SRC_DIR% && py.test -k "not test_fortran_compiler"     # [win]
   requires:
+    - path.py
     - pytest
     - pytest-mock
     - pytest-cov
     - six
     - git
     - cmake
+    - ninja
     - cython
 
 about:
