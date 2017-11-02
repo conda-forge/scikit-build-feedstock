@@ -1,6 +1,6 @@
 {% set name = "scikit-build" %}
-{% set version = "0.5.1" %}
-{% set sha256 = "36adc258c09c908d41dc6f046afd711c5b2bf64f02e757a3768911b92573973e" %}
+{% set version = "0.6.1" %}
+{% set sha256 = "998a731eb4d1160e848717bbbec046d9b37f748b4f3e902562bc7d22e82b2721" %}
 
 package:
   name: {{ name|lower }}
@@ -31,9 +31,10 @@ requirements:
 test:
   imports:
     - skbuild
+  source_files:
+    - tests/*
   commands:
-    - cd ${SRC_DIR} && py.test -k "not test_fortran_compiler"    # [unix]
-    - cd %SRC_DIR% && py.test -k "not test_fortran_compiler"     # [win]
+    - py.test -k "not test_fortran_compiler"
   requires:
     - path.py
     - pytest
