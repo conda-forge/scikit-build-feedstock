@@ -1,6 +1,6 @@
 {% set name = "scikit-build" %}
-{% set version = "0.5.1" %}
-{% set sha256 = "36adc258c09c908d41dc6f046afd711c5b2bf64f02e757a3768911b92573973e" %}
+{% set version = "0.7.1" %}
+{% set sha256 = "94147efd6212348331d4b2529f72ca48f0253339a800d6003b13420f26d9a170" %}
 
 package:
   name: {{ name|lower }}
@@ -20,10 +20,12 @@ requirements:
   build:
     - python
     - setuptools
+    - packaging
     - wheel
   run:
     - python
     - setuptools
+    - packaging
     - wheel
     - cmake
     - ninja
@@ -34,15 +36,17 @@ test:
   source_files:
     - tests/*
   commands:
-    - py.test -k "not test_fortran_compiler"
+    - py.test -k "not fortran_compiler and not setup_requires_keyword_include_cmake"
   requires:
     - path.py
     - pytest
-    - pytest-mock
     - pytest-cov
+    - pytest-mock
+    - pytest-runner
+    - mock
     - six
     - git
-    - cmake
+    - cmake>=3.10
     - ninja
     - cython
 
