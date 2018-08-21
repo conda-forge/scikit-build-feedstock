@@ -55,6 +55,7 @@ test:
     - cmake
     - ninja
     - cython
+    - requests
 
 about:
   home: http://github.com/scikit-build/scikit-build
