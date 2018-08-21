@@ -1,6 +1,6 @@
 {% set name = "scikit-build" %}
-{% set version = "0.5.1" %}
-{% set sha256 = "36adc258c09c908d41dc6f046afd711c5b2bf64f02e757a3768911b92573973e" %}
+{% set version = "0.8.0" %}
+{% set sha256 = "111f41cd6503d5e877b867c00e91215c3d92f3343603b8cccf6f045cf97de562" %}
 
 package:
   name: {{ name|lower }}
@@ -12,22 +12,27 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 1
-  script:
-    - python setup.py install --single-version-externally-managed --record record.txt
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
 
 requirements:
   build:
     - cmake
     - ninja
+    - pip
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
+    - packaging
+    - pip
     - python
     - setuptools
     - wheel
   run:
+    - cmake
+    - packaging
     - python
+    - ninja
     - setuptools
     - wheel
 
@@ -39,10 +44,12 @@ test:
   commands:
     - py.test -k "not test_fortran_compiler"
   requires:
+    - mock
     - path.py
     - pytest
     - pytest-mock
     - pytest-cov
+    - pytest-runner
     - six
     - git
     - cmake
