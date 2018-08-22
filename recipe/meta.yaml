@@ -1,6 +1,6 @@
 {% set name = "scikit-build" %}
-{% set version = "0.5.1" %}
-{% set sha256 = "36adc258c09c908d41dc6f046afd711c5b2bf64f02e757a3768911b92573973e" %}
+{% set version = "0.8.0" %}
+{% set sha256 = "111f41cd6503d5e877b867c00e91215c3d92f3343603b8cccf6f045cf97de562" %}
 
 package:
   name: {{ name|lower }}
@@ -13,37 +13,50 @@ source:
 
 build:
   number: 0
-  script:
-    - python setup.py install --single-version-externally-managed --record record.txt
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
 
 requirements:
   build:
+    - cmake
+    - ninja
+    - pip
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - packaging
+    - pip
     - python
     - setuptools
     - wheel
   run:
+    - cmake
+    - packaging
     - python
+    - ninja
     - setuptools
     - wheel
-    - cmake
-    - ninja
 
 test:
   imports:
     - skbuild
+  source_files:
+    - tests/*
   commands:
-    - cd ${SRC_DIR} && py.test -k "not test_fortran_compiler"    # [unix]
-    - cd %SRC_DIR% && py.test -k "not test_fortran_compiler"     # [win]
+    - py.test -k "not test_fortran_compiler and not test_issue352_isolated_environment_support"  # [unix]
+    - py.test -k "not test_fortran_compiler and not test_issue352_isolated_environment_support and not test_cmake_install_dir_keyword"  # [win]
   requires:
+    - mock
     - path.py
     - pytest
     - pytest-mock
     - pytest-cov
+    - pytest-runner
     - six
     - git
     - cmake
     - ninja
     - cython
+    - requests
 
 about:
   home: http://github.com/scikit-build/scikit-build
