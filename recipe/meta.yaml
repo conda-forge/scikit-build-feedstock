@@ -29,6 +29,9 @@ requirements:
     - setuptools
     - wheel
   run:
+    - {{ compiler('fortran') }}          # [not win and c_compiler!='toolchain_c']
+    - {{ compiler('cxx') }}              # [not win and c_compiler!='toolchain_c']
+    - {{ compiler('c') }}                # [not win and c_compiler!='toolchain_c']
     - cmake
     - packaging
     - python
