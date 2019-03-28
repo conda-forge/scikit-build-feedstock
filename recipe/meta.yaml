@@ -1,6 +1,6 @@
 {% set name = "scikit-build" %}
-{% set version = "0.8.1" %}
-{% set sha256 = "dbee97088fc878a05b70482c182141359a81615dc1d969ddbf09e919f94efca9" %}
+{% set version = "0.9.0" %}
+{% set sha256 = "b7ac5a574ca5a4b0891aeaf5b0340de9fdc88d0081669dca494cef5b9fa760b0" %}
 
 package:
   name: {{ name|lower }}
@@ -12,7 +12,7 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 1
+  number: 0
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
 
 requirements:
@@ -41,10 +41,9 @@ test:
     - skbuild
   source_files:
     - tests/*
-  commands:
-    - py.test -k "not test_fortran_compiler and not test_issue352_isolated_environment_support"  # [unix]
-    - py.test -k "not test_fortran_compiler and not test_issue352_isolated_environment_support and not test_cmake_install_dir_keyword"  # [win]
   requires:
+    - {{ compiler('c') }}  # [linux]
+    - {{ compiler('cxx') }}  # [linux]
     - mock
     - path.py
     - pytest
