@@ -10,6 +10,8 @@ source:
   fn: {{ name }}-{{ version }}.tar.gz
   url: https://github.com/scikit-build/scikit-build/archive/{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - 0001-Replace-platform.linux_distribution-with-distro.id.patch
 
 build:
   number: 0
@@ -30,6 +32,7 @@ requirements:
     - wheel
   run:
     - cmake
+    - distro
     - packaging
     - python
     - ninja
