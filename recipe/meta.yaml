@@ -45,8 +45,8 @@ test:
   source_files:
     - tests/*
   requires:
-    - {{ compiler('c') }}  # [linux]
-    - {{ compiler('cxx') }}  # [linux]
+    - {{ compiler('c') }}  # [unix]
+    - {{ compiler('cxx') }}  # [unix]
     - mock
     - path.py
     - pytest
