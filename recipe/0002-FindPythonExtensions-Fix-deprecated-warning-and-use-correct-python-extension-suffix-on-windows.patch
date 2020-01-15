@@ -1,0 +1,255 @@
+commit 58e0da9c660227b40901313c2bd15b0d1772baa8
+Author: Jean-Christophe Fillion-Robin <jchris.fillionr@kitware.com>
+Date:   Wed Jun 12 03:15:13 2019 -0400
+
+    Merge pull request #433 from jcfr/fix-DeprecationWarning-get_config_var-SO
+    
+    FindPythonExtensions: Fix deprecated warning and use correct python extension suffix on windows
+
+diff --git a/CHANGES.rst b/CHANGES.rst
+index e2f9fb6..575624d 100644
+--- a/CHANGES.rst
++++ b/CHANGES.rst
+@@ -5,6 +5,24 @@ Release Notes
+ This is the list of changes to scikit-build between each release. For full
+ details, see the commit logs at http://github.com/scikit-build/scikit-build
+ 
++Next Release
++============
++
++Bug fixes
++---------
++
++* Update CMake module :doc:`/cmake-modules/PythonExtensions`:
++
++  * Ensure correct suffix is used for compiled python module on windows. See :issue:`383`.
++
++  * Fix warning using `EXT_SUFFIX` config variable instead of deprecated `SO` variable. See :issue:`381`.
++
++Documentation
++-------------
++
++* Add :doc:`/notes` section to the `For maintainers` top-level category that includes a comparison between
++  `sysconfig` and `distutils.sysconfig` modules.
++
+ Scikit-build 0.10.0
+ ===================
+ 
+diff --git a/docs/index.rst b/docs/index.rst
+index ddd8386..1fd4e4f 100644
+--- a/docs/index.rst
++++ b/docs/index.rst
+@@ -36,6 +36,7 @@ To get started, see :ref:`this example <basic_usage_example>`.
+    :caption: For maintainers
+ 
+    make_a_release
++   notes
+ 
+ Indices and tables
+ ==================
+diff --git a/docs/notes.rst b/docs/notes.rst
+new file mode 100644
+index 0000000..dff621d
+--- /dev/null
++++ b/docs/notes.rst
+@@ -0,0 +1,69 @@
++=====
++Notes
++=====
++
++`sysconfig` vs `distutils.sysconfig`
++------------------------------------
++
++After installing CPython, two sysconfig modules are available:
++
++* `sysconfig`
++* `distutils.sysconfig`
++
++A difference is the value associated with the ``EXT_SUFFIX`` and ``SO`` configuration
++variables.
++
++.. table::
++
++    +----------------+-------------------------+----------------------------------+------------------------+---------------------+
++    |                |                         | Linux                            | macOS                  | Windows             |
++    +----------------+-------------------------+----------------------------------+------------------------+---------------------+
++    |                |                         | CPython 2.7                                                                     |
++    +================+=========================+==================================+========================+=====================+
++    | **SO**         | **sysconfig**           | .so                              | .so                    | .pyd                |
++    |                +-------------------------+                                  |                        |                     |
++    |                | **distutils.sysconfig** |                                  |                        |                     |
++    +----------------+-------------------------+----------------------------------+------------------------+---------------------+
++    | **EXT_SUFFIX** | **sysconfig**           | None                             | None                   | None                |
++    |                +-------------------------+                                  |                        |                     |
++    |                | **distutils.sysconfig** |                                  |                        |                     |
++    +----------------+-------------------------+----------------------------------+------------------------+---------------------+
++    |                |                         | **CPython >= 3.5**                                                              |
++    +----------------+-------------------------+----------------------------------+------------------------+---------------------+
++    | **SO**         | **sysconfig**           | .cpython-37m-x86_64-linux-gnu.so | .cpython-37m-darwin.so | .pyd                |
++    |                +-------------------------+                                  |                        +---------------------+
++    |                | **distutils.sysconfig** |                                  |                        | .cp37-win_amd64.pyd |
++    +----------------+-------------------------+                                  |                        +---------------------+
++    | **EXT_SUFFIX** | **sysconfig**           |                                  |                        | .pyd                |
++    |                +-------------------------+                                  |                        +---------------------+
++    |                | **distutils.sysconfig** |                                  |                        | .cp37-win_amd64.pyd |
++    +----------------+-------------------------+----------------------------------+------------------------+---------------------+
++
++
++
++.. note::
++
++    The ``EXT_SUFFIX`` was introduced in Python 3.4 and is functionally equivalent to ``SO``
++    configuration variable. The ``SO`` configuration variable has been deprecated since Python 3.4.
++
++.. note::
++
++    The information reported in the table have been collected execution the following python snippet.
++
++    .. code-block:: python
++
++        def display_ext_suffix_config_var():
++            import platform
++            import sys
++            import sysconfig
++            from distutils import sysconfig as du_sysconfig
++            details = (platform.python_implementation(),) + sys.version_info[:3]
++            print("%s %s.%s.%s" % details)
++            print(" SO")
++            print("  sysconfig           : %s" % sysconfig.get_config_var('SO'))
++            print("  distutils.sysconfig : %s" % du_sysconfig.get_config_var('SO'))
++            print(" EXT_SUFFIX")
++            print("  sysconfig           : %s" % sysconfig.get_config_var('EXT_SUFFIX'))
++            print("  distutils.sysconfig : %s" % du_sysconfig.get_config_var('EXT_SUFFIX'))
++
++        display_ext_suffix_config_var()
+diff --git a/skbuild/resources/cmake/FindPythonExtensions.cmake b/skbuild/resources/cmake/FindPythonExtensions.cmake
+index dafc337..352dae4 100644
+--- a/skbuild/resources/cmake/FindPythonExtensions.cmake
++++ b/skbuild/resources/cmake/FindPythonExtensions.cmake
+@@ -254,7 +254,6 @@ import os
+ import os.path
+ import site
+ import sys
+-import sysconfig
+ 
+ result = None
+ rel_result = None
+@@ -282,13 +281,17 @@ for candidate in candidates:
+         rel_result = rel_candidate
+         break
+ 
++ext_suffix_var = 'SO'
++if sys.version_info[:2] >= (3, 5):
++    ext_suffix_var = 'EXT_SUFFIX'
++
+ sys.stdout.write(\";\".join((
+     os.sep,
+     os.pathsep,
+     sys.prefix,
+     result,
+     rel_result,
+-    sysconfig.get_config_var('SO')
++    distutils.sysconfig.get_config_var(ext_suffix_var)
+ )))
+ ")
+ 
+diff --git a/tests/__init__.py b/tests/__init__.py
+index ff3957a..ad5dfdc 100644
+--- a/tests/__init__.py
++++ b/tests/__init__.py
+@@ -317,3 +317,12 @@ def list_ancestors(path):
+     """Return logical ancestors of the path.
+     """
+     return [str(parent) for parent in pathlib.PurePosixPath(path).parents if str(parent) != "."]
++
++
++def get_ext_suffix():
++    """Return python extension suffix.
++    """
++    ext_suffix_var = 'SO'
++    if sys.version_info[:2] >= (3, 5):
++        ext_suffix_var = 'EXT_SUFFIX'
++    return distutils.sysconfig.get_config_var(ext_suffix_var)
+diff --git a/tests/test_hello_cpp.py b/tests/test_hello_cpp.py
+index d39c8ef..e4b9252 100644
+--- a/tests/test_hello_cpp.py
++++ b/tests/test_hello_cpp.py
+@@ -10,12 +10,11 @@ Tries to build and test the `hello-cpp` sample project.
+ import glob
+ import os
+ import pytest
+-import sysconfig
+ 
+ from skbuild.constants import CMAKE_BUILD_DIR, CMAKE_INSTALL_DIR, SKBUILD_DIR
+ from skbuild.utils import push_dir
+ 
+-from . import project_setup_py_test
++from . import get_ext_suffix, project_setup_py_test
+ from . import (_copy_dir, _tmpdir, SAMPLES_DIR)
+ from .pytest_helpers import check_sdist_content, check_wheel_content
+ 
+@@ -72,7 +71,7 @@ def test_hello_sdist():
+ 
+ def test_hello_wheel():
+     expected_content = [
+-        'hello/_hello%s' % (sysconfig.get_config_var('SO')),
++        'hello/_hello%s' % get_ext_suffix(),
+         'hello/__init__.py',
+         'hello/__main__.py',
+         'hello/world.py',
+@@ -198,7 +197,7 @@ def test_hello_develop():
+         'hello/CMakeLists.txt',
+         # These files are "generated" by CMake and
+         # are copied from CMAKE_INSTALL_DIR
+-        'hello/_hello%s' % (sysconfig.get_config_var('SO')),
++        'hello/_hello%s' % get_ext_suffix(),
+         'hello/world.py',
+         'helloModule.py'
+     ]:
+diff --git a/tests/test_hello_cython.py b/tests/test_hello_cython.py
+index 203aebb..e9b0a2b 100644
+--- a/tests/test_hello_cython.py
++++ b/tests/test_hello_cython.py
+@@ -8,9 +8,8 @@ Tries to build and test the `hello-cython` sample project.
+ """
+ 
+ import glob
+-import sysconfig
+ 
+-from . import project_setup_py_test
++from . import get_ext_suffix, project_setup_py_test
+ from .pytest_helpers import check_sdist_content, check_wheel_content
+ 
+ 
+@@ -49,7 +48,7 @@ def test_hello_cython_sdist():
+ @project_setup_py_test("hello-cython", ["bdist_wheel"])
+ def test_hello_cython_wheel():
+     expected_content = [
+-        'hello_cython/_hello%s' % (sysconfig.get_config_var('SO')),
++        'hello_cython/_hello%s' % get_ext_suffix(),
+         'hello_cython/__init__.py',
+         'hello_cython/__main__.py'
+     ]
+diff --git a/tests/test_issue284_build_ext_inplace.py b/tests/test_issue284_build_ext_inplace.py
+index 78dd3dd..1d978c2 100644
+--- a/tests/test_issue284_build_ext_inplace.py
++++ b/tests/test_issue284_build_ext_inplace.py
+@@ -1,15 +1,10 @@
+ 
+ import os
+-import sysconfig
+ 
+-from distutils import sysconfig as du_sysconfig
+-
+-from . import project_setup_py_test
++from . import get_ext_suffix, project_setup_py_test
+ 
+ 
+ @project_setup_py_test("issue-284-build-ext-inplace", ["build_ext", "--inplace"], disable_languages_test=True)
+ def test_build_ext_inplace_command():
+-    assert os.path.exists('hello/_hello_sk%s' % sysconfig.get_config_var('SO'))
+-
+-    # See issue scikit-build #383
+-    assert os.path.exists('hello/_hello_ext%s' % du_sysconfig.get_config_var('SO'))
++    assert os.path.exists('hello/_hello_sk%s' % get_ext_suffix())
++    assert os.path.exists('hello/_hello_ext%s' % get_ext_suffix())

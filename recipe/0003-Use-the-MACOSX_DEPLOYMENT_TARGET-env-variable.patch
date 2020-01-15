@@ -1,0 +1,204 @@
+commit 00d1ef2ab8b99bfce2dd54334d162eed2b68a732
+Author: Jean-Christophe Fillion-Robin <jchris.fillionr@kitware.com>
+Date:   Sat Jul 27 19:28:52 2019 -0400
+
+    Merge pull request #441 from certik/osx
+    
+    Use the MACOSX_DEPLOYMENT_TARGET env variable
+
+diff --git a/CHANGES.rst b/CHANGES.rst
+index 575624d..ff45e01 100644
+--- a/CHANGES.rst
++++ b/CHANGES.rst
+@@ -17,6 +17,9 @@ Bug fixes
+ 
+   * Fix warning using `EXT_SUFFIX` config variable instead of deprecated `SO` variable. See :issue:`381`.
+ 
++* Honor the `MACOSX_DEPLOYMENT_TARGET` environment variable if it is defined on
++  macOS. Thanks :user:`certik` for the contribution. See :issue`441`.
++
+ Documentation
+ -------------
+ 
+diff --git a/docs/generators.rst b/docs/generators.rst
+index d97a2f6..fa33dff 100644
+--- a/docs/generators.rst
++++ b/docs/generators.rst
+@@ -266,6 +266,11 @@ If needed, this can be overridden by explicitly passing the CMake option
+ Customizing Deployment Target and Architecture
+ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 
++.. versionadded:: 0.11.0
++
++Deployment target can be customized by setting the `MACOSX_DEPLOYMENT_TARGET`
++environment variable.
++
+ .. versionadded:: 0.7.0
+ 
+ Deployment target and architecture can be customized by associating the
+diff --git a/skbuild/constants.py b/skbuild/constants.py
+index 2787eae..915ad63 100644
+--- a/skbuild/constants.py
++++ b/skbuild/constants.py
+@@ -20,10 +20,16 @@ def _default_skbuild_plat_name():
+     On macOS, it corresponds to the version and machine associated with :func:`platform.mac_ver()`.
+     """
+     if sys.platform == 'darwin':
+-        # distutils.util.get_platform() returns the release based on the value
+-        # of MACOSX_DEPLOYMENT_TARGET on which Python was built, which may
+-        # be significantly older than the user's current machine.
++        # If the MACOSX_DEPLOYMENT_TARGET environment variable is defined, use
++        # it, as it will be the most accurate. Otherwise use the value returned
++        # by platform.mac_ver() provided by the platform module available in
++        # the Python standard library.
++        #
++        # Note that on macOS, distutils.util.get_platform() is not used because
++        # it returns the macOS version on which Python was built which may be
++        # significantly older than the user's current machine.
+         release, _, machine = platform.mac_ver()
++        release = os.environ.get("MACOSX_DEPLOYMENT_TARGET", release)
+         split_ver = release.split('.')
+         return 'macosx-{}.{}-{}'.format(split_ver[0], split_ver[1], machine)
+     else:
+diff --git a/tests/test_issue342_cmake_osx_args_in_setup.py b/tests/test_issue342_cmake_osx_args_in_setup.py
+index 2e57a45..e11e6a7 100644
+--- a/tests/test_issue342_cmake_osx_args_in_setup.py
++++ b/tests/test_issue342_cmake_osx_args_in_setup.py
+@@ -1,15 +1,21 @@
+ import pytest
+ import sys
+ import textwrap
++import platform
+ 
+ import skbuild.constants
+ 
+-from . import _tmpdir, execute_setup_py
++from . import _tmpdir, execute_setup_py, push_env
+ 
++params = "osx_deployment_target_env_var,cli_setup_args," \
++    "keyword_cmake_args,cli_cmake_args,expected_cmake_osx_deployment_target"
+ 
+-@pytest.mark.parametrize("cli_setup_args,keyword_cmake_args,cli_cmake_args,expected_cmake_osx_deployment_target", [
++
++@pytest.mark.parametrize(params, [
+     # default plat_name is 'macosx-10.6-x86_64'
+     (
++            # osx_deployment_target_env_var
++            None,
+             # cli_setup_args
+             [],
+             # keyword_cmake_args
+@@ -20,6 +26,32 @@ from . import _tmpdir, execute_setup_py
+             "10.6"
+     ),
+     (
++            # osx_deployment_target_env_var
++            "10.7",
++            # cli_setup_args
++            [],
++            # keyword_cmake_args
++            [],
++            # cli_cmake_args
++            [],
++            # expected_cmake_osx_deployment_target
++            "10.7"
++    ),
++    (
++            # osx_deployment_target_env_var
++            "10.7",
++            # cli_setup_args
++            ['--plat-name', 'macosx-10.9-x86_64'],
++            # keyword_cmake_args
++            [],
++            # cli_cmake_args
++            [],
++            # expected_cmake_osx_deployment_target
++            "10.9"
++    ),
++    (
++            # osx_deployment_target_env_var
++            None,
+             # cli_setup_args
+             ['--plat-name', 'macosx-10.6-x86_64'],
+             # keyword_cmake_args
+@@ -30,6 +62,8 @@ from . import _tmpdir, execute_setup_py
+             "10.6"
+     ),
+     (
++            # osx_deployment_target_env_var
++            None,
+             # cli_setup_args
+             ['--plat-name', 'macosx-10.7-x86_64'],
+             # keyword_cmake_args
+@@ -40,6 +74,8 @@ from . import _tmpdir, execute_setup_py
+             "10.7"
+     ),
+     (
++            # osx_deployment_target_env_var
++            None,
+             # cli_setup_args
+             [],
+             # keyword_cmake_args
+@@ -50,6 +86,8 @@ from . import _tmpdir, execute_setup_py
+             "10.7"
+     ),
+     (
++            # osx_deployment_target_env_var
++            None,
+             # cli_setup_args
+             ['--plat-name', 'macosx-10.12-x86_64'],
+             # keyword_cmake_args
+@@ -60,6 +98,8 @@ from . import _tmpdir, execute_setup_py
+             "10.7"
+     ),
+     (
++            # osx_deployment_target_env_var
++            None,
+             # cli_setup_args
+             [],
+             # keyword_cmake_args
+@@ -70,6 +110,8 @@ from . import _tmpdir, execute_setup_py
+             "10.8"
+     ),
+     (
++            # osx_deployment_target_env_var
++            None,
+             # cli_setup_args
+             ['--plat-name', 'macosx-10.12-x86_64'],
+             # keyword_cmake_args
+@@ -81,6 +123,7 @@ from . import _tmpdir, execute_setup_py
+     ),
+ ])
+ def test_cmake_args_keyword_osx_default(
++        osx_deployment_target_env_var,
+         cli_setup_args, keyword_cmake_args, cli_cmake_args, expected_cmake_osx_deployment_target, mocker):
+ 
+     tmp_dir = _tmpdir('cmake_args_keyword_osx_default')
+@@ -110,14 +153,23 @@ def test_cmake_args_keyword_osx_default(
+         # allow to run the test on any platform
+         saved_platform = sys.platform
+         sys.platform = "darwin"
++
++        def mock_mac_ver():
++            return "10.6", None, "x84_64"
++
++        saved_mac_ver = platform.mac_ver
++        platform.mac_ver = mock_mac_ver
++
+         saved_SKBUILD_PLAT_NAME = skbuild.constants._SKBUILD_PLAT_NAME
+-        skbuild.constants._SKBUILD_PLAT_NAME = "macosx-10.6-x84_64"
+ 
+-        with pytest.raises(RuntimeError, match="exit skbuild"):
+-            with execute_setup_py(tmp_dir, ['build'] + cli_setup_args + ['--'] + cli_cmake_args):
+-                pass
++        with push_env(MACOSX_DEPLOYMENT_TARGET=osx_deployment_target_env_var):
++            skbuild.constants._SKBUILD_PLAT_NAME = skbuild.constants._default_skbuild_plat_name()
++            with pytest.raises(RuntimeError, match="exit skbuild"):
++                with execute_setup_py(tmp_dir, ['build'] + cli_setup_args + ['--'] + cli_cmake_args):
++                    pass
+     finally:
+         sys.platform = saved_platform
++        platform.mac_ver = saved_mac_ver
+         skbuild.constants._SKBUILD_PLAT_NAME = saved_SKBUILD_PLAT_NAME
+ 
+     assert mock_configure.call_count == 1

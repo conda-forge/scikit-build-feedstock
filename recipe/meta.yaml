@@ -12,6 +12,8 @@ source:
   sha256: {{ sha256 }}
   patches:
     - 0001-Replace-platform.linux_distribution-with-distro.id.patch
+    - 0002-FindPythonExtensions-Fix-deprecated-warning-and-use-correct-python-extension-suffix-on-windows.patch
+    - 0003-Use-the-MACOSX_DEPLOYMENT_TARGET-env-variable.patch
 
 build:
   number: 0
