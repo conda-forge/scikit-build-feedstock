@@ -14,7 +14,7 @@ source:
     - 0003-Use-the-MACOSX_DEPLOYMENT_TARGET-env-variable.patch
 
 build:
-  number: 0
+  number: 1
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
 
 requirements:
