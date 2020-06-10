@@ -7,4 +7,5 @@ appveyor:
 provider:
   win: azure
   linux_ppc64le: default
+  linux_aarch64: default
 conda_forge_output_validation: true
