@@ -43,6 +43,7 @@ test:
   requires:
     - {{ compiler('c') }}  # [unix]
     - {{ compiler('cxx') }}  # [unix]
+    - make  # [unix]
     - mock
     - path.py
     - pytest
