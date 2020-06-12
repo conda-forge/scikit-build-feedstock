@@ -10,7 +10,7 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 0
+  number: 1
   script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv
 
 requirements:
@@ -43,6 +43,7 @@ test:
   requires:
     - {{ compiler('c') }}  # [unix]
     - {{ compiler('cxx') }}  # [unix]
+    - make  # [unix]
     - mock
     - path.py
     - pytest
