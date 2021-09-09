@@ -18,7 +18,7 @@ requirements:
     - python                                 # [build_platform != target_platform]
     - cross-python_{{ target_platform }}     # [build_platform != target_platform]
     - cmake
-    - ninja  # [unix]
+    - ninja
     - pip
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
@@ -55,7 +55,7 @@ test:
     - six
     - git
     - cmake
-    - ninja  # [unix]
+    - ninja
     - cython
     - requests
 
