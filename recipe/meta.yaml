@@ -33,7 +33,7 @@ requirements:
     - distro
     - packaging
     - python
-    - ninja  # [unix]
+    - ninja
     - setuptools
     - wheel
 
