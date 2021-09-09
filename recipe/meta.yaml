@@ -18,10 +18,10 @@ requirements:
     - python                                 # [build_platform != target_platform]
     - cross-python_{{ target_platform }}     # [build_platform != target_platform]
     - cmake
-    - ninja
+    - ninja  # [unix]
     - pip
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}  # [unix]
+    - {{ compiler('cxx') }}  # [unix]
   host:
     - packaging
     - pip
@@ -33,7 +33,7 @@ requirements:
     - distro
     - packaging
     - python
-    - ninja
+    - ninja  # [unix]
     - setuptools
     - wheel
 
@@ -55,7 +55,7 @@ test:
     - six
     - git
     - cmake
-    - ninja
+    - ninja  # [unix]
     - cython
     - requests
 
