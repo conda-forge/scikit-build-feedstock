@@ -10,30 +10,24 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 2
+  number: 3
   script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv
+  noarch: python
+
 
 requirements:
-  build:
-    - python                                 # [build_platform != target_platform]
-    - cross-python_{{ target_platform }}     # [build_platform != target_platform]
-    - cmake
-    - ninja
-    - pip
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
   host:
     - packaging
     - pip
-    - python
+    - python >=2.7
     - setuptools
     - wheel
   run:
     - cmake
     - distro
-    - packaging
-    - python
     - ninja
+    - packaging
+    - python >=2.7
     - setuptools
     - wheel
 
@@ -45,19 +39,20 @@ test:
   requires:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - cmake
+    - cython
+    - git
     - make  # [unix]
     - mock
+    - ninja
     - path.py
     - pytest
-    - pytest-mock
     - pytest-cov
+    - pytest-mock
     - pytest-runner
-    - six
-    - git
-    - cmake
-    - ninja
-    - cython
     - requests
+    - setuptools <60
+    - six
 
 about:
   home: http://github.com/scikit-build/scikit-build
