@@ -42,7 +42,6 @@ test:
     - cmake
     - cython
     - git
-    - make  # [unix]
     - mock
     - ninja
     - path.py
