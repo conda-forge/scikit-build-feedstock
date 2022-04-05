@@ -25,7 +25,7 @@ requirements:
   run:
     - cmake
     - distro
-    - ninja
+    - make
     - packaging
     - python >=2.7
     - setuptools
@@ -39,16 +39,13 @@ test:
   requires:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - cmake
     - cython
     - git
     - mock
-    - ninja
     - path.py
     - pytest
     - pytest-cov
     - pytest-mock
-    - pytest-runner
     - requests
     - setuptools
     - six
