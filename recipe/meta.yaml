@@ -6,7 +6,7 @@ package:
   version: {{ version }}
 
 source:
-  url: url: https://pypi.io/packages/source/s/scikit_build/scikit_build-{{ version }}.tar.gz
+  url: https://pypi.io/packages/source/s/scikit_build/scikit_build-{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
