@@ -29,6 +29,7 @@ requirements:
     - packaging
     - python >=2.7
     - setuptools
+    - setuptools_scm
     - wheel
 
 test:
@@ -36,6 +37,8 @@ test:
     - skbuild
   source_files:
     - tests/*
+  commands:
+    - pip check
   requires:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
@@ -46,6 +49,7 @@ test:
     - mock
     - ninja
     - path.py
+    - pip
     - pytest
     - pytest-cov
     - pytest-mock
