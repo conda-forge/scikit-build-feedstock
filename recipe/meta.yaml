@@ -1,5 +1,5 @@
-{% set version = "0.15.0" %}
-{% set sha256 = "e723cd0f3489a042370b9ea988bbb9cfd7725e8b25b20ca1c7981821fcf65fb9" %}
+{% set version = "0.16.1" %}
+{% set sha256 = "9b87dcac5cfd884ccfe313e66a1feea596075a99d370d20488314ae5d19296db" %}
 
 package:
   name: scikit-build
@@ -19,7 +19,7 @@ requirements:
   host:
     - packaging
     - pip
-    - python >=2.7
+    - python >=3.6
     - setuptools
     - setuptools_scm
     - wheel
@@ -28,7 +28,7 @@ requirements:
     - distro
     - make
     - packaging
-    - python >=2.7
+    - python >=3.6
     - setuptools
     - wheel
 
@@ -44,7 +44,6 @@ test:
     - {{ compiler('cxx') }}
     - cython
     - git
-    - mock
     - path.py
     - pip
     - pytest
@@ -52,7 +51,6 @@ test:
     - pytest-mock
     - requests
     - setuptools
-    - six
 
 about:
   home: http://github.com/scikit-build/scikit-build
