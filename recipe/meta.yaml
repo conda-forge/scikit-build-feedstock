@@ -44,6 +44,7 @@ test:
     - {{ compiler('cxx') }}
     - cython
     - git
+    - path.py
     - pip
     - pytest
     - pytest-cov
