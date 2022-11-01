@@ -19,7 +19,7 @@ requirements:
   host:
     - packaging
     - pip
-    - python >=2.7
+    - python >=3.6
     - setuptools
     - setuptools_scm
     - wheel
@@ -28,7 +28,7 @@ requirements:
     - distro
     - make
     - packaging
-    - python >=2.7
+    - python >=3.6
     - setuptools
     - wheel
 
@@ -44,15 +44,12 @@ test:
     - {{ compiler('cxx') }}
     - cython
     - git
-    - mock
-    - path.py
     - pip
     - pytest
     - pytest-cov
     - pytest-mock
     - requests
     - setuptools
-    - six
 
 about:
   home: http://github.com/scikit-build/scikit-build
