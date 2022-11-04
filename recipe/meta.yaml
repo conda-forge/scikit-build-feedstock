@@ -50,7 +50,7 @@ test:
     - pytest-cov
     - pytest-mock
     - requests
-    - setuptools
+    - setuptools<65.5
 
 about:
   home: http://github.com/scikit-build/scikit-build
