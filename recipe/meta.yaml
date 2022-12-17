@@ -1,5 +1,5 @@
-{% set version = "0.16.3" %}
-{% set sha256 = "656ecabf264df6e23d103e02f4887c0fe5a47a2cd42f66cf3de08201de0cbf37" %}
+{% set version = "0.16.4" %}
+{% set sha256 = "2a20c4adeab3c2aec11d70bce9690995cff0e53beafe321a7b530009aca8e731" %}
 
 package:
   name: scikit-build
