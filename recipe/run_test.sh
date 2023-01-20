@@ -1,1 +1,1 @@
-pytest -m "not isolated and not deprecated and not fortran" --deselect test_isolated_env_trigger_reconfigure --deselect test_generator_cleanup --deselect test_configure_with_cmake_args -v
+pytest -k "not test_fortran_compiler and not test_issue352_isolated_environment_support and not test_cmake_install_dir_keyword and not test_generator_selection and not pep518 and not test_configure_with_cmake_args" -v
