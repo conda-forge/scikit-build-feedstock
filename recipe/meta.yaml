@@ -1,5 +1,5 @@
-{% set version = "0.16.4" %}
-{% set sha256 = "2a20c4adeab3c2aec11d70bce9690995cff0e53beafe321a7b530009aca8e731" %}
+{% set version = "0.16.5" %}
+{% set sha256 = "564bf3d004927d02f5b0007285e538ad4550eb891c1eb0448f94af165bbe6e63" %}
 
 package:
   name: scikit-build
@@ -8,11 +8,9 @@ package:
 source:
   url: https://pypi.io/packages/source/s/scikit-build/scikit-build-{{ version }}.tar.gz
   sha256: {{ sha256 }}
-  patches:
-    - macos.patch
 
 build:
-  number: 1
+  number: 0
   script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv
   noarch: python
 
@@ -39,6 +37,7 @@ test:
     - skbuild
   source_files:
     - tests/*
+    - pyproject.toml
   commands:
     - pip check
   requires:
@@ -53,7 +52,7 @@ test:
     - pytest-mock
     - requests
     - setuptools
-    - wheel <0.38
+    - wheel
 
 about:
   home: http://github.com/scikit-build/scikit-build
