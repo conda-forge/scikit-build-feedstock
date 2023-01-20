@@ -8,8 +8,6 @@ package:
 source:
   url: https://pypi.io/packages/source/s/scikit-build/scikit-build-{{ version }}.tar.gz
   sha256: {{ sha256 }}
-  patches:
-    - macos.patch
 
 build:
   number: 0
@@ -53,7 +51,7 @@ test:
     - pytest-mock
     - requests
     - setuptools
-    - wheel <0.38
+    - wheel
 
 about:
   home: http://github.com/scikit-build/scikit-build
