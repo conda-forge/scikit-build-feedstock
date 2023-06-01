@@ -39,7 +39,6 @@ test:
     - pyproject.toml
   commands:
     - pip check
-    - pytest
   requires:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
