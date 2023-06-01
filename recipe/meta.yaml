@@ -39,6 +39,7 @@ test:
     - pyproject.toml
   commands:
     - pip check
+    - pytest
   requires:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
@@ -53,6 +54,7 @@ test:
     - pytest-mock
     - requests
     - setuptools
+    - virtualenv
     - wheel
 
 about:
