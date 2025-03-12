@@ -8,6 +8,8 @@ package:
 source:
   url: https://pypi.org/packages/source/s/scikit-build/scikit_build-{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - tests.patch
 
 build:
   number: 1
