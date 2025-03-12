@@ -40,6 +40,7 @@ tests:
       imports:
         - skbuild
       python_version: ${{ python_min }}.*
+      pip_check: true
   - files:
       source:
         - tests/*
@@ -63,7 +64,7 @@ tests:
         - wheel
         - python ${{ python_min }}.*
     script:
-      - pip check
+      file: run_test
 
 about:
   license: MIT
