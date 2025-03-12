@@ -11,7 +11,7 @@ Summary: Improved build system generator for CPython C extensions.
 
 Development: http://github.com/scikit-build/scikit-build
 
-Documentation: http://scikit-build.readthedocs.org
+Documentation: http://scikit-build.readthedocs.org/
 
 Current build status
 ====================
