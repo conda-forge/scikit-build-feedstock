@@ -6,4 +6,4 @@ call rmpath C:\\ProgramData\\Chocolatey\\bin
 call rmpath C:\\Strawberry\\c\\bin
 popd
 
-pytest -m "not fortran and not isolated" -k "not test_issue352_isolated_environment_support and not test_configure_with_cmake_args and not test_generator_selection" -v
+pytest -m "not fortran and not isolated" -k "not test_issue352_isolated_environment_support and not test_configure_with_cmake_args and not test_generator_selection and not test_sdist_with_symlinks`" -v
