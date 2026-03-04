@@ -16,7 +16,9 @@ source:
 build:
   number: 0
   noarch: python
-  script: ${{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv
+  script: 
+    - rm tests/samples/issue-401-sdist-with-symlinks/VERSION
+    - ${{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv
 
 requirements:
   host:
@@ -43,8 +45,6 @@ tests:
       source:
         - tests/*
         - pyproject.toml
-      exclude:
-        - tests/samples/issue-401-sdist-with-symlinks/VERSION
     requirements:
       run:
         - ${{ compiler('c') }}
