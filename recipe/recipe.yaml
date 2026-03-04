@@ -17,6 +17,9 @@ build:
   number: 0
   noarch: python
   script: ${{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv
+  files:
+    exclude:
+      - tests/samples/issue-401-sdist-with-symlinks/VERSION
 
 requirements:
   host:
